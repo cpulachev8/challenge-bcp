@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/exchange-rates")
 public class ExchangeRateController {
@@ -33,5 +35,10 @@ public class ExchangeRateController {
         return this.exchangeService.updateExchangeRate(updateRateRequest);
     }
 
+    @GetMapping("/currencies")
+    @ResponseStatus(HttpStatus.OK)
+    public Flowable<List<String>> getCurrencies() {
+        return this.exchangeService.getCurrencies();
+    }
 
 }

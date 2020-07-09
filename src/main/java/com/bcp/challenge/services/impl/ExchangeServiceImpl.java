@@ -12,6 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ExchangeServiceImpl implements ExchangeService {
@@ -40,12 +43,23 @@ public class ExchangeServiceImpl implements ExchangeService {
         }));
     }
 
+    @Override
+    public Flowable<List<String>> getCurrencies() {
+        return Flowable.fromArray(this.exchangeRateRepository.findAll())
+                .flatMap(exchangeRates -> Flowable.fromArray(
+                        exchangeRates.stream()
+                        .map(ExchangeRate::getOriginCurrency)
+                        .distinct()
+                        .collect(Collectors.toList())
+                ));
+    }
+
     public ExchangeRateResponse applyExchangeRate(ExchangeRateRequest exchangeRateRequest) {
         ExchangeRate rate = this.exchangeRateRepository.findByOriginCurrencyAndDestinationCurrency(exchangeRateRequest.getOriginCurrency(), exchangeRateRequest.getDestinationCurrency())
-                .orElse(ExchangeRate.builder().rate(BigDecimal.ZERO).build());
+                .orElse(ExchangeRate.builder().rate(BigDecimal.ONE).build());
         return ExchangeRateResponse.builder()
                 .amount(exchangeRateRequest.getAmount())
-                .amountWithExchangeRate(exchangeRateRequest.getAmount().multiply(rate.getRate()))
+                .amountWithExchangeRate(exchangeRateRequest.getOriginCurrency().equals("PEN") ? exchangeRateRequest.getAmount().divide(rate.getRate(), 2, RoundingMode.HALF_UP) : exchangeRateRequest.getAmount().multiply(rate.getRate()))
                 .originCurrency(rate.getOriginCurrency())
                 .destinationCurrency(rate.getDestinationCurrency())
                 .exchangeRate(rate.getRate())

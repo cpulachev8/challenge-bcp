@@ -13,10 +13,10 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class ExchangeRateResponse {
 
-    private BigDecimal amount;
-    private BigDecimal amountWithExchangeRate;
-    private String originCurrency;
-    private String destinationCurrency;
-    private BigDecimal exchangeRate;
+        private BigDecimal amount;
+        private BigDecimal amountWithExchangeRate;
+        private String originCurrency;
+        private String destinationCurrency;
+        private BigDecimal exchangeRate;
 
 }
