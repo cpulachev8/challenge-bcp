@@ -1,4 +1,4 @@
-FROM adoptopenjdk/openjdk11
+FROM openjdk:8
 WORKDIR /
 ADD /target/challenge-0.0.1-SNAPSHOT.jar /
 EXPOSE 8080
